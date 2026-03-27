@@ -2,6 +2,7 @@
   "name": "FileTrack",
   "domains": ["sensor"],
   "domain": "filetrack",
+  "icon": "images/logo.png",
   "iot_class": "Local Polling",
   "render_readme": true
 }
