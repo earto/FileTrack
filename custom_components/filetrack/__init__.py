@@ -3,8 +3,9 @@ import uuid
 import logging
 import voluptuous as vol
 from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.storage import Store
-from homeassistant.helpers import config_validation as cv, discovery
+from homeassistant.helpers import config_validation as cv
 from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,8 +21,8 @@ ADD_SENSOR_SCHEMA = vol.Schema({
 })
 
 
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Initialiseer FileTrack en registreer de add_sensor service."""
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    """Laad FileTrack vanuit het config entry en registreer de add_sensor service."""
     store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
     stored = await store.async_load() or {"sensors": []}
 
@@ -45,7 +46,6 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 raise ValueError(f"Kan map niet aanmaken: {folder}") from e
 
         sensor_id = uuid.uuid4().hex
-
         sensor_config = {
             "id": sensor_id,
             "name": name,
@@ -66,8 +66,10 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
     hass.services.async_register(DOMAIN, "add_sensor", handle_add_sensor, schema=ADD_SENSOR_SCHEMA)
 
-    hass.async_create_task(
-        discovery.async_load_platform(hass, "sensor", DOMAIN, {}, config)
-    )
-
+    await hass.config_entries.async_forward_entry_setups(entry, ["sensor"])
     return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    hass.services.async_remove(DOMAIN, "add_sensor")
+    return await hass.config_entries.async_unload_platforms(entry, ["sensor"])
