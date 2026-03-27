@@ -14,10 +14,13 @@ class FileTrackConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            # Validatie: Bestaat de map?
-            if not os.path.isdir(user_input[CONF_FOLDER_PATHS]):
-                errors["base"] = "invalid_path"
-            else:
+            folder = user_input[CONF_FOLDER_PATHS]
+            if not os.path.isdir(folder):
+                try:
+                    os.makedirs(folder, exist_ok=True)
+                except Exception:
+                    errors["base"] = "invalid_path"
+            if not errors:
                 return self.async_create_entry(
                     title=user_input["name"], 
                     data=user_input
