@@ -12,13 +12,3 @@ A Home Assistant custom component that monitors folders and exposes a `fileList`
 ## Usage
 
 Sensors are created directly from the **Camera Gallery Card editor** — no YAML, no manual setup.
-
-## Sensor attributes
-
-| Attribute | Description |
-|---|---|
-| `fileList` | Sorted list of file paths in the monitored folder |
-| `number_of_files` | Total number of files |
-| `path` | Monitored folder path |
-| `filter` | Active file filter (default: `*`) |
-| `sort` | Sort method: `date`, `name`, or `size` |
