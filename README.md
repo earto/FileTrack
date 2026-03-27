@@ -6,7 +6,8 @@ A Home Assistant custom component that monitors folders and exposes a `fileList`
 
 1. Add this repository as a custom repository in HACS
 2. Download **FileTrack** via HACS
-3. Restart Home Assistant — FileTrack activates automatically
+3. Restart Home Assistant
+4. Go to **Settings → Devices & Services → Add Integration → FileTrack** — completes instantly, no configuration needed
 
 ## Usage
 
