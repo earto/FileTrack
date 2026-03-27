@@ -9,6 +9,7 @@ from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECUR
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(minutes=1)
 
+
 def get_files_list(folder_path, filter_term, sort, recursive):
     query = os.path.join(folder_path, filter_term)
     files = glob.glob(query, recursive=recursive)
@@ -16,10 +17,11 @@ def get_files_list(folder_path, filter_term, sort, recursive):
         return sorted(files)
     elif sort == "size":
         return sorted(files, key=os.path.getsize)
-    else: # date
+    else:  # date
         return sorted(files, key=os.path.getmtime, reverse=True)
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+
+async def async_setup_entry(hass, entry, async_add_entities):
     """Laad sensoren vanuit de opgeslagen configuratie."""
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN]["add_entities"] = async_add_entities
@@ -37,6 +39,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         ))
     if entities:
         async_add_entities(entities, True)
+
 
 class FileTrackSensor(SensorEntity):
     """De sensor definitie."""
@@ -57,7 +60,7 @@ class FileTrackSensor(SensorEntity):
         """Haal de nieuwe data op."""
         files_list = get_files_list(self._folder_path, self._filter_term, self._sort, self._recursive)
         total_size = sum(os.path.getsize(f) for f in files_list if os.path.isfile(f))
-        
+
         self._state = round(total_size / 1e6, 2)
         self._attributes = {
             "path": self._folder_path,
