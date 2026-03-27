@@ -1,30 +1,45 @@
-# Files Component
-Custom Component for Home Assistant that reads a list of files from a directory into a sensor.
+# FileTrack
 
-This was developed for use alongside the [Gallery Card](https://github.com/TarheelGrad1998/gallery-card) but may have other uses.
+Custom Component for Home Assistant that monitors a folder and creates a sensor listing its files.
+
+This component is a fork of the original [Files](https://github.com/TarheelGrad1998/files) integration, which has been archived by its creator. FileTrack has been adapted and maintained specifically for use with the [Camera Gallery Card](https://github.com/TheScubadiver/camera-gallery-card), allowing users to easily display and manage media files from Home Assistant.
 
 ## Installation
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 
-Files must be in the WWW folder, ideally in a subfolder. This component will periodically scan the folder for changes to the files, and is based on the built-in Folder component.
+Files must be placed in the `www` folder inside your Home Assistant configuration, ideally in a dedicated subfolder for better organization. FileTrack will periodically scan this folder for changes and update the sensor accordingly. It is based on the built-in Folder component.
 
-The component can be installed from HACS (use the Custom Repository option), but follow the below instructions to install manually.
-1. Create a folder in your `config` directory (normally where your configuration.yaml file lives) named `custom_components`
-2. Create a folder in your `custom_components` named `files`
-3. Copy the 3 files (_init_.py, manifest.json, and sensor.py) into the `files` folder
-4. Restart Home Assistant
-5. Create a folder in your `WWW` folder named `images` (or any other name, but be sure to use the proper name below)
-6. Add your images/videos to this folder
-7. Add the files sensor to your configuration.yaml file
-    ```yaml
-    - sensor
-        - platform: files
-          folder: /config/www/images
-          filter: '**/*.jpg'
-          name: gallery_images
-          sort: date
-          recursive: True
-    ```
+You can install **FileTrack** via **HACS** (use the *Custom Repository* option), or install manually by following these steps:
+
+1. **Create the custom components folder**  
+   In your Home Assistant `config` directory (where `configuration.yaml` lives), create a folder named `custom_components`.
+
+2. **Create the FileTrack folder**  
+   Inside `custom_components`, create a folder named `filetrack`.
+
+3. **Copy the component files**  
+   Copy the following three files into the `filetrack` folder:  
+   - `_init_.py`  
+   - `manifest.json`  
+   - `sensor.py`
+
+4. **Restart Home Assistant**  
+   This will load the new component.
+
+5. **Create your media folder**  
+   Inside the `www` folder, create a subfolder (for example, `images`) and place your media files there.
+
+6. **Add the sensor to your configuration**  
+   In your `configuration.yaml`, add:
+
+   ```yaml
+   - sensor:
+       - platform: filetrack
+         folder: /config/www/images
+         filter: '**/*.jpg'
+         name: gallery_images
+         sort: date
+         recursive: false
 8. Restart Home Assistant
 9. Check the sensor.gallery_images entity to see if the `fileList` attribute lists your files
 
@@ -36,19 +51,4 @@ The component can be installed from HACS (use the Custom Repository option), but
 | folder | string | **Required** | Folder to scan, must be /config/www/***
 | name | string | **Required** | The entity ID for the sensor
 | sort | string | **Optional** | One of 'name', 'date', or 'size';  Determines how files are sorted in the Gallery, `Default: date`
-| recursive | boolean | **Optional** | True or False; If True, the pattern filter `**` will match any files and zero or more directories, subdirectories and symbolic links to directories. **Note:** Using the `**` pattern in large directory trees may consume an inordinate amount of time , `Default: False` 
-
-## Force Reloading 
-
-The entity will automatically update on a schedule, however, if you need to refresh more often or at some event, you can use the [update_entity service call](https://www.home-assistant.io/integrations/homeassistant/#service-homeassistantupdate_entity).  
-
-    action:
-      - service: homeassistant.update_entity
-        target:
-          entity_id:
-          - sensor.gallery_images
-  
-
-## Credits
-
-This component largely created from work done by @zsarnett in [the slideshow card](https://github.com/zsarnett/slideshow-card), from which other inspiration was also taken.  
+| recursive | boolean | **Optional** | True or False; If True, the pattern filter `**` will match any files and zero or more directories, subdirectories and symbolic links to directories. **Note:** Using the `**` pattern in large directory trees may consume an inordinate amount of time , `Default: False`  
