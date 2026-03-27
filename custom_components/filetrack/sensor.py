@@ -4,7 +4,7 @@ import logging
 from datetime import timedelta
 
 from homeassistant.components.sensor import SensorEntity
-from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE
+from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(minutes=1)
@@ -19,19 +19,24 @@ def get_files_list(folder_path, filter_term, sort, recursive):
     else: # date
         return sorted(files, key=os.path.getmtime, reverse=True)
 
-async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup sensor platform via de Config Entry (GUI)."""
-    config = entry.data
-    
-    sensor = FileTrackSensor(
-        config[CONF_FOLDER_PATHS],
-        config["name"],
-        config[CONF_FILTER],
-        config[CONF_SORT],
-        config[CONF_RECURSIVE],
-        entry.entry_id
-    )
-    async_add_entities([sensor], True)
+async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+    """Laad sensoren vanuit de opgeslagen configuratie."""
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN]["add_entities"] = async_add_entities
+
+    stored = hass.data[DOMAIN].get("stored", {})
+    entities = []
+    for sc in stored.get("sensors", []):
+        entities.append(FileTrackSensor(
+            sc[CONF_FOLDER_PATHS],
+            sc["name"],
+            sc.get(CONF_FILTER, DEFAULT_FILTER),
+            sc.get(CONF_SORT, DEFAULT_SORT),
+            sc.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
+            sc["id"]
+        ))
+    if entities:
+        async_add_entities(entities, True)
 
 class FileTrackSensor(SensorEntity):
     """De sensor definitie."""
