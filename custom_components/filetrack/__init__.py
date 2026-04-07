@@ -6,11 +6,26 @@ from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers import config_validation as cv
-from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE
+from homeassistant.helpers.discovery import async_load_platform
+from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE, SORT_OPTIONS
 
 _LOGGER = logging.getLogger(__name__)
 STORAGE_KEY = f"{DOMAIN}.sensors"
 STORAGE_VERSION = 1
+
+SENSOR_SCHEMA = vol.Schema({
+    vol.Required("name"): cv.string,
+    vol.Required(CONF_FOLDER_PATHS): cv.string,
+    vol.Optional(CONF_FILTER, default=DEFAULT_FILTER): cv.string,
+    vol.Optional(CONF_SORT, default=DEFAULT_SORT): vol.In(SORT_OPTIONS),
+    vol.Optional(CONF_RECURSIVE, default=DEFAULT_RECURSIVE): cv.boolean,
+})
+
+CONFIG_SCHEMA = vol.Schema({
+    DOMAIN: vol.Schema({
+        vol.Optional("sensors", default=[]): vol.All(cv.ensure_list, [SENSOR_SCHEMA]),
+    })
+}, extra=vol.ALLOW_EXTRA)
 
 ADD_SENSOR_SCHEMA = vol.Schema({
     vol.Required("name"): cv.string,
@@ -19,6 +34,17 @@ ADD_SENSOR_SCHEMA = vol.Schema({
     vol.Optional(CONF_SORT, default=DEFAULT_SORT): cv.string,
     vol.Optional(CONF_RECURSIVE, default=DEFAULT_RECURSIVE): cv.boolean,
 })
+
+
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Verwerk YAML-configuratie onder het filetrack: domein."""
+    domain_config = config.get(DOMAIN, {})
+    sensors = domain_config.get("sensors", [])
+    for sensor_conf in sensors:
+        hass.async_create_task(
+            async_load_platform(hass, "sensor", DOMAIN, sensor_conf, config)
+        )
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
