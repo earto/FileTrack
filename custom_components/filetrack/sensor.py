@@ -6,7 +6,7 @@ from datetime import timedelta
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import SensorEntity, PLATFORM_SCHEMA
-from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE, SORT_OPTIONS
+from .const import DOMAIN, MANUFACTURER, MODEL, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE, SORT_OPTIONS
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(minutes=1)
@@ -102,3 +102,19 @@ class FileTrackSensor(SensorEntity):
     @property
     def extra_state_attributes(self):
         return self._attributes
+
+    @property
+    def device_info(self):
+        version = "Unknown"
+        if "custom_components" in self.hass.data:
+            component = self.hass.data["custom_components"].get(DOMAIN)
+            if component:
+                version = component.version
+
+        return {
+            "identifiers": {(DOMAIN, "filetrack_service_device")},
+            "name": "FileTrack",
+            "manufacturer": MANUFACTURER,
+            "model": MODEL,
+            "sw_version": version,
+        }
