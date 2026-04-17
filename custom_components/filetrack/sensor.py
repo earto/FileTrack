@@ -110,16 +110,9 @@ class FileTrackSensor(SensorEntity):
 
     @property
     def device_info(self):
-        version = "Unknown"
-        if "custom_components" in self.hass.data:
-            component = self.hass.data["custom_components"].get(DOMAIN)
-            if component:
-                version = component.version
-
         return {
             "identifiers": {(DOMAIN, "filetrack_service_device")},
             "name": "FileTrack",
             "manufacturer": MANUFACTURER,
             "model": MODEL,
-            "sw_version": version,
         }
