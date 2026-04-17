@@ -116,10 +116,15 @@ class FileTrackSensor(SensorEntity):
             if component:
                 version = component.version
 
-        return {
+        device_info = {
             "identifiers": {(DOMAIN, "filetrack_service_device")},
             "name": "FileTrack",
             "manufacturer": MANUFACTURER,
             "model": MODEL,
             "sw_version": version,
         }
+
+        if self._entry:
+            device_info["config_entry_id"] = self._entry.entry_id #
+            
+        return device_info
