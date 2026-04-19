@@ -125,9 +125,11 @@ class FileTrackSensor(SensorEntity):
         return self._attributes
 
     @property
+    def config_entry_id(self):
+        return self._config_entry.entry_id if self._config_entry else None
+    
+    @property
     def device_info(self):
         return {
             "identifiers": {(DOMAIN, "filetrack_service_device")},
         }
-        
-        return info
