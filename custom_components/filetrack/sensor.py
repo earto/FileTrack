@@ -126,12 +126,8 @@ class FileTrackSensor(SensorEntity):
 
     @property
     def device_info(self):
-        info = {
+        return {
             "identifiers": {(DOMAIN, "filetrack_service_device")},
-            "name": "FileTrack",
-            "manufacturer": MANUFACTURER,
-            "model": MODEL,
         }
-        if self._config_entry:
-            info["config_entry_id"] = self._config_entry.entry_id
+        
         return info
