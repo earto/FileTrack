@@ -56,6 +56,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN]["store"] = store
     hass.data[DOMAIN]["stored"] = stored
     hass.data[DOMAIN]["add_entities"] = None
+    
+    # Create device in registry for proper linking
+    from homeassistant.helpers import device_registry as dr
+    from .const import MANUFACTURER, MODEL
+    
+    device_registry = dr.async_get(hass)
+    device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={(DOMAIN, "filetrack_service_device")},
+        name="FileTrack",
+        manufacturer=MANUFACTURER,
+        model=MODEL,
+    )
 
     async def handle_add_sensor(call: ServiceCall) -> None:
         name = call.data["name"].strip()
