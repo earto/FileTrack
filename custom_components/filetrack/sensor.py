@@ -39,6 +39,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     entry_id = cfg.get(CONF_UNIQUE_ID)
     if entry_id is None:
         entry_id = f"yaml_{name.lower().replace(' ', '_')}"
+    entries = hass.config_entries.async_entries(DOMAIN)
+    config_entry = entries[0] if entries else None
     
     sensor = FileTrackSensor(
         folder_path=cfg[CONF_FOLDER_PATHS],
@@ -47,6 +49,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         sort=cfg.get(CONF_SORT, DEFAULT_SORT),
         recursive=cfg.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
         entry_id=entry_id,
+        config_entry=config_entry,
     )
     async_add_entities([sensor], True)
 
