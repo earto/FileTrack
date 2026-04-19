@@ -7,7 +7,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.discovery import async_load_platform
-from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE, SORT_OPTIONS
+from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, CONF_UNIQUE_ID, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE, SORT_OPTIONS
 
 _LOGGER = logging.getLogger(__name__)
 STORAGE_KEY = f"{DOMAIN}.sensors"
