@@ -123,4 +123,3 @@ class FileTrackSensor(SensorEntity):
         if self._config_entry:
             info["config_entry_id"] = self._config_entry.entry_id
         return info
-        
