@@ -19,6 +19,7 @@ SENSOR_SCHEMA = vol.Schema({
     vol.Optional(CONF_FILTER, default=DEFAULT_FILTER): cv.string,
     vol.Optional(CONF_SORT, default=DEFAULT_SORT): vol.In(SORT_OPTIONS),
     vol.Optional(CONF_RECURSIVE, default=DEFAULT_RECURSIVE): cv.boolean,
+    vol.Optional(CONF_UNIQUE_ID): cv.string,
 })
 
 CONFIG_SCHEMA = vol.Schema({
@@ -38,12 +39,9 @@ ADD_SENSOR_SCHEMA = vol.Schema({
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Verwerk YAML-configuratie onder het filetrack: domein."""
+    hass.data.setdefault(DOMAIN, {})
     domain_config = config.get(DOMAIN, {})
-    sensors = domain_config.get("sensors", [])
-    for sensor_conf in sensors:
-        hass.async_create_task(
-            async_load_platform(hass, "sensor", DOMAIN, sensor_conf, config)
-        )
+    hass.data[DOMAIN]["yaml_sensors"] = domain_config.get("sensors", [])
     return True
 
 
