@@ -69,6 +69,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             sc.get(CONF_SORT, DEFAULT_SORT),
             sc.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
             sc["id"]
+            config_entry=entry
         ))
     if entities:
         async_add_entities(entities, True)
