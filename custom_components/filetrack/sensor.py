@@ -32,41 +32,14 @@ def get_files_list(folder_path, filter_term, sort, recursive):
         return sorted(files, key=os.path.getmtime, reverse=True)
 
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Sensor aanmaken via YAML configuratie (filetrack: sensors:)."""
-    _LOGGER.debug("FileTrack: Starting async_setup_platform for YAML")
-    cfg = discovery_info if discovery_info is not None else config
-    name = cfg["name"]
-    entry_id = cfg.get(CONF_UNIQUE_ID)
-    if entry_id is None:
-        entry_id = f"yaml_{name.lower().replace(' ', '_')}"
-    entries = hass.config_entries.async_entries(DOMAIN)
-    _LOGGER.debug("FileTrack: Found %s existing config entries", len(entries))
-    config_entry = entries[0] if entries else None
-    if config_entry:
-        _LOGGER.debug("FileTrack: Linking YAML sensor '%s' to entry '%s'", name, config_entry.entry_id)
-    else:
-        _LOGGER.warning("FileTrack: No config entry found for YAML sensor '%s'", name)
-    
-    sensor = FileTrackSensor(
-        folder_path=cfg[CONF_FOLDER_PATHS],
-        name=name,
-        filter_term=cfg.get(CONF_FILTER, DEFAULT_FILTER),
-        sort=cfg.get(CONF_SORT, DEFAULT_SORT),
-        recursive=cfg.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
-        entry_id=entry_id,
-        config_entry=config_entry,
-    )
-    async_add_entities([sensor], True)
-
-
 async def async_setup_entry(hass, entry, async_add_entities):
     """Laad sensoren vanuit de opgeslagen configuratie."""
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN]["add_entities"] = async_add_entities
-
     stored = hass.data[DOMAIN].get("stored", {})
+    yaml_config = hass.data[DOMAIN].get("yaml_sensors", [])
     entities = []
+    
     for sc in stored.get("sensors", []):
         entities.append(FileTrackSensor(
             sc[CONF_FOLDER_PATHS],
@@ -75,6 +48,21 @@ async def async_setup_entry(hass, entry, async_add_entities):
             sc.get(CONF_SORT, DEFAULT_SORT),
             sc.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
             sc["id"],
+            config_entry=entry
+        ))
+    for yc in yaml_config:
+        name = yc["name"]
+        entry_id = yc.get(CONF_UNIQUE_ID)
+        if entry_id is None:
+            entry_id = f"yaml_{name.lower().replace(' ', '_')}"
+        
+        entities.append(FileTrackSensor(
+            yc[CONF_FOLDER_PATHS],
+            name,
+            yc.get(CONF_FILTER, DEFAULT_FILTER),
+            yc.get(CONF_SORT, DEFAULT_SORT),
+            yc.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
+            entry_id, # Our stable YAML ID
             config_entry=entry
         ))
     if entities:
