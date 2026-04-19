@@ -34,13 +34,19 @@ def get_files_list(folder_path, filter_term, sort, recursive):
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Sensor aanmaken via YAML configuratie (filetrack: sensors:)."""
+    _LOGGER.debug("FileTrack: Starting async_setup_platform for YAML")
     cfg = discovery_info if discovery_info is not None else config
     name = cfg["name"]
     entry_id = cfg.get(CONF_UNIQUE_ID)
     if entry_id is None:
         entry_id = f"yaml_{name.lower().replace(' ', '_')}"
     entries = hass.config_entries.async_entries(DOMAIN)
+    _LOGGER.debug("FileTrack: Found %s existing config entries", len(entries))
     config_entry = entries[0] if entries else None
+    if config_entry:
+        _LOGGER.debug("FileTrack: Linking YAML sensor '%s' to entry '%s'", name, config_entry.entry_id)
+    else:
+        _LOGGER.warning("FileTrack: No config entry found for YAML sensor '%s'", name)
     
     sensor = FileTrackSensor(
         folder_path=cfg[CONF_FOLDER_PATHS],
