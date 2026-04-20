@@ -52,9 +52,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
         ))
     for yc in yaml_config:
         name = yc["name"]
-        entry_id = yc.get(CONF_UNIQUE_ID)
-        if entry_id is None:
-            entry_id = f"yaml_{name.lower().replace(' ', '_')}"
+        yaml_unique_id = yc.get(CONF_UNIQUE_ID)
+        if yaml_unique_id:
+            unique_id = yaml_unique_id
+        else:
+            unique_id = f"filetrack_{name.lower().replace(' ', '_')}"
         
         entities.append(FileTrackSensor(
             yc[CONF_FOLDER_PATHS],
@@ -62,7 +64,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             yc.get(CONF_FILTER, DEFAULT_FILTER),
             yc.get(CONF_SORT, DEFAULT_SORT),
             yc.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
-            entry_id, # Our stable YAML ID
+            unique_id,
             config_entry=entry
         ))
     if entities:
@@ -73,10 +75,11 @@ class FileTrackSensor(SensorEntity):
     """De sensor definitie."""
     _attr_icon = "mdi:folder"
     _attr_native_unit_of_measurement = "MB"
+    _attr_has_entity_name = False
 
     def __init__(self, folder_path, name, filter_term, sort, recursive, entry_id, config_entry=None):
         self._attr_name = name
-        self._attr_unique_id = f"filetrack_{entry_id}"
+        self._attr_unique_id = entry_id
         if config_entry:
             self._attr_config_entry_id = config_entry.entry_id
             self._config_entry = config_entry
