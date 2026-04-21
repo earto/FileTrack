@@ -3,20 +3,20 @@
     "step": {
       "user": {
         "title": "FileTrack",
-        "description": "Set up FileTrack to monitor folders."
+        "description": "Click submit to activate FileTrack. You can add specific folder sensors later via the Configure button."
       }
     },
     "abort": {
       "already_configured": "FileTrack is already configured."
     }
   },
-"options": {
+  "options": {
     "step": {
       "init": {
-        "title": "Manage FileTrack",
+        "title": "Manage FileTrack Sensors",
         "menu_options": {
-          "add_sensor": "Add Folder Sensor",
-          "remove_sensor": "Remove Existing Sensors"
+          "add_sensor": "Add a new folder sensor",
+          "remove_sensor": "Remove existing sensors"
         }
       },
       "add_sensor": {
@@ -31,16 +31,16 @@
       },
       "remove_sensor": {
         "title": "Remove Sensors",
-        "description": "Select the sensors to remove.",
+        "description": "Select the sensors you want to stop tracking.",
         "data": {
-          "sensors": "Sensors"
+          "sensors": "Sensors to remove"
         }
       },
       "confirm": {
         "title": "Confirm Removal",
-        "description": "Remove these sensors?\n\n**{names}**",
+        "description": "Are you sure you want to remove these sensors?\n\n{names}",
         "data": {
-          "confirm": "Confirm deletion"
+          "confirm": "Check to confirm deletion"
         }
       }
     },
