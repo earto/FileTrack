@@ -2,8 +2,8 @@
   "config": {
     "step": {
       "user": {
-        "title": "FileTrack",
-        "description": "Click submit to activate FileTrack. You can add specific folder sensors later via the Configure button."
+        "title": "Set up FileTrack",
+        "description": "FileTrack will be activated immediately. Use the configuration menu to add folder sensors."
       }
     },
     "abort": {
@@ -13,40 +13,40 @@
   "options": {
     "step": {
       "init": {
-        "title": "Manage FileTrack Sensors",
+        "title": "Manage Sensors",
         "menu_options": {
           "add_sensor": "Add a new folder sensor",
           "remove_sensor": "Remove existing sensors"
         }
       },
       "add_sensor": {
-        "title": "Add Folder Sensor",
+        "title": "Add new sensor",
         "data": {
           "name": "Sensor Name",
           "folder": "Folder Path",
-          "filter": "Filter (e.g., *.jpg)",
+          "filter": "Filter (e.g. *.jpg)",
           "sort": "Sort Criteria",
           "recursive": "Search Subfolders"
         }
       },
       "remove_sensor": {
-        "title": "Remove Sensors",
-        "description": "Select the sensors you want to stop tracking.",
+        "title": "Remove sensors",
+        "description": "Select the sensor(s) you wish to remove.",
         "data": {
           "sensors": "Sensors to remove"
         }
       },
       "confirm": {
-        "title": "Confirm Removal",
-        "description": "Are you sure you want to remove these sensors?\n\n{names}",
+        "title": "Confirm removal",
+        "description": "You are about to permanently remove the following sensor(s):\n\n**{names}**\n\nThis cannot be undone.",
         "data": {
-          "confirm": "Check to confirm deletion"
+          "confirm": "Yes, remove these sensor(s)"
         }
       }
     },
     "abort": {
-      "no_sensors": "No sensors found to remove.",
-      "cancelled": "Action cancelled."
+      "no_sensors": "There are no sensors to remove.",
+      "cancelled": "Operation cancelled."
     }
   }
 }
