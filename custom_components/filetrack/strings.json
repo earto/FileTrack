@@ -10,13 +10,14 @@
       "already_configured": "FileTrack is already configured."
     }
   },
-  "options": {
+"options": {
     "step": {
       "init": {
-        "menu_options": [
-          "add_sensor",
-          "remove_sensor"
-        ]
+        "title": "Manage FileTrack",
+        "menu_options": {
+          "add_sensor": "Add Folder Sensor",
+          "remove_sensor": "Remove Existing Sensors"
+        }
       },
       "add_sensor": {
         "title": "Add Folder Sensor",
