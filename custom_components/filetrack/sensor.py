@@ -6,7 +6,8 @@ from datetime import timedelta
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import SensorEntity, PLATFORM_SCHEMA
-from .const import DOMAIN, MANUFACTURER, MODEL, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, CONF_UNIQUE_ID, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE, SORT_OPTIONS
+from homeassistant.helpers.entity import DeviceInfo
+from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, CONF_UNIQUE_ID, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE, SORT_OPTIONS
 
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(minutes=1)
@@ -36,7 +37,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Laad sensoren vanuit de opgeslagen configuratie."""
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN]["add_entities"] = async_add_entities
-    store = hass.data[DOMAIN].get("store")
     stored = hass.data[DOMAIN].get("stored", {})
     yaml_config = hass.data[DOMAIN].get("yaml_sensors", [])
     entities = []
@@ -49,9 +49,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             sc.get(CONF_SORT, DEFAULT_SORT),
             sc.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
             sc["id"],
-            config_entry=entry,
-            is_yaml=False,
-            store=store
+            config_entry=entry
         ))
     for yc in yaml_config:
         name = yc["name"]
@@ -68,10 +66,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             yc.get(CONF_SORT, DEFAULT_SORT),
             yc.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
             unique_id,
-            config_entry=entry,
-            is_yaml=True,
-            store=None
-            
+            config_entry=entry           
         ))
     if entities:
         async_add_entities(entities, True)
@@ -83,7 +78,7 @@ class FileTrackSensor(SensorEntity):
     _attr_native_unit_of_measurement = "MB"
     _attr_has_entity_name = False
 
-    def __init__(self, folder_path, name, filter_term, sort, recursive, entry_id, config_entry=None, is_yaml=False, store=None):
+    def __init__(self, folder_path, name, filter_term, sort, recursive, entry_id, config_entry=None):
         self._attr_name = name
         self._attr_suggested_object_id = name
         self._attr_unique_id = entry_id
@@ -93,8 +88,6 @@ class FileTrackSensor(SensorEntity):
         else:
             self._attr_config_entry_id = None
             self._config_entry = None
-        self._is_yaml = is_yaml
-        self._store = store
         self._folder_path = os.path.join(folder_path, "")
         self._filter_term = filter_term
         self._sort = sort
@@ -116,18 +109,6 @@ class FileTrackSensor(SensorEntity):
             "sort": self._sort,
         }
 
-    async def async_remove(self) -> None:
-        if not self._is_yaml and self._store:
-            stored = self.hass.data[DOMAIN].get("stored", {})
-            if "sensors" in stored:
-                original_count = len(stored["sensors"])
-                stored["sensors"] = [s for s in stored["sensors"] if s["id"] != self._attr_unique_id]   
-                if len(stored["sensors"]) < original_count:
-                    _LOGGER.info("Deleting UI sensor %s from JSON storage", self._attr_unique_id)
-                    await self._store.async_save(stored)
-        
-        await super().async_remove()
-
     @property
     def native_value(self):
         return self._state
@@ -135,10 +116,6 @@ class FileTrackSensor(SensorEntity):
     @property
     def extra_state_attributes(self):
         return self._attributes
-
-    @property
-    def config_entry_id(self):
-        return self._config_entry.entry_id if self._config_entry else None
     
     @property
     def device_info(self):
