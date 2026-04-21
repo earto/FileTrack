@@ -2,12 +2,12 @@
   "config": {
     "step": {
       "user": {
-        "title": "Set up FileTrack",
-        "description": "FileTrack will be activated immediately. Use the configuration menu to add folder sensors."
+        "title": "Configure FileTrack",
+        "description": "FileTrack will be activated immediately. Use the config menu to add or remove sensors."
       }
     },
     "abort": {
-      "already_configured": "FileTrack is already configured."
+      "already_configured": "FileTrack is already added. Use the config menu to add sensors"
     }
   },
   "options": {
@@ -15,12 +15,12 @@
       "init": {
         "title": "Manage Sensors",
         "menu_options": {
-          "add_sensor": "Add a new folder sensor",
-          "remove_sensor": "Remove existing sensors"
+          "add_sensor": "Add new FileTrack sensor",
+          "remove_sensor": "Remove FileTrack sensors"
         }
       },
       "add_sensor": {
-        "title": "Add new sensor",
+        "title": "Add new FileTrack sensor",
         "data": {
           "name": "Sensor Name",
           "folder": "Folder Path",
@@ -30,15 +30,15 @@
         }
       },
       "remove_sensor": {
-        "title": "Remove sensors",
+        "title": "Remove FileTrack sensors",
         "description": "Select the sensor(s) you wish to remove.",
         "data": {
           "sensors": "Sensors to remove"
         }
       },
       "confirm": {
-        "title": "Confirm removal",
-        "description": "You are about to permanently remove the following sensor(s):\n\n**{names}**\n\nThis cannot be undone.",
+        "title": "Confirmation",
+        "description": "You are about to permanently remove the following sensor(s):\n\n**{names}**\n\nAre you sure?",
         "data": {
           "confirm": "Yes, remove these sensor(s)"
         }
