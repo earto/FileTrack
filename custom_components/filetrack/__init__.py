@@ -78,8 +78,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             try:
                 os.makedirs(folder, exist_ok=True)
             except Exception as e:
-                _LOGGER.error("FileTrack: map aanmaken mislukt %s: %s", folder, e)
-                raise ValueError(f"Kan map niet aanmaken: {folder}") from e
+                _LOGGER.error("FileTrack: Failed to create folder %s: %s", folder, e)
+                raise ValueError(f"Cannot create folder: {folder}") from e
 
         sensor_id = uuid.uuid4().hex
         sensor_config = {
@@ -96,9 +96,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         add_entities = hass.data[DOMAIN].get("add_entities")
         if add_entities:
             from .sensor import FileTrackSensor
-            add_entities([FileTrackSensor(folder, name, filter_term, sort, recursive, sensor_id, config_entry=entry, is_yaml=False, store=store)], True)
+            add_entities([FileTrackSensor(folder, name, filter_term, sort, recursive, sensor_id, config_entry=entry)], True)
         else:
-            _LOGGER.warning("FileTrack: sensor platform nog niet geladen, sensor verschijnt na herstart")
+            _LOGGER.warning("FileTrack: sensor platform not loaded yet, sensor appears after restart")
 
     hass.services.async_register(DOMAIN, "add_sensor", handle_add_sensor, schema=ADD_SENSOR_SCHEMA)
 
