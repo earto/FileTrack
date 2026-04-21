@@ -64,7 +64,9 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
             if user_input.get("confirm"):
                 for name in self._to_remove:
                     await self._do_remove(name)
-            return self.async_create_entry(title="", data={})
+                await self.hass.config_entries.async_reload(self._config_entry.entry_id)
+                return self.async_create_entry(title="", data={})
+            return self.async_abort(reason="cancelled")
 
         names = "\n".join(f"• {n}" for n in self._to_remove)
         return self.async_show_form(
@@ -87,7 +89,7 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
 
         from homeassistant.helpers import entity_registry as er
         registry = er.async_get(self.hass)
-        entity_id = registry.async_get_entity_id("sensor", DOMAIN, f"filetrack_{sensor_id}")
+        entity_id = registry.async_get_entity_id("sensor", DOMAIN, sensor_id)
         if entity_id:
             registry.async_remove(entity_id)
 
