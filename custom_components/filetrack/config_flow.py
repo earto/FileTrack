@@ -1,3 +1,4 @@
+import logging
 import uuid
 from homeassistant import config_entries
 from homeassistant.helpers.storage import Store
@@ -7,6 +8,7 @@ from .const import (DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECU
 
 STORAGE_VERSION = 1
 STORAGE_KEY = f"{DOMAIN}.sensors"
+_LOGGER = logging.getLogger(__name__)
 
 
 class FileTrackConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -32,13 +34,16 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
         self._to_remove = []
 
     async def async_step_init(self, user_input=None):
+        _LOGGER.debug("FileTrack: Options menu requested (async_step_init)")
         return self.async_show_menu(
             step_id="init",
             menu_options=["add_sensor", "remove_sensor"]
         )
 
     async def async_step_add_sensor(self, user_input=None):
+        _LOGGER.debug("FileTrack: Add sensor step triggered")
         if user_input is not None:
+            _LOGGER.info("FileTrack: Adding new sensor: %s", user_input["name"])
             store = Store(self.hass, STORAGE_VERSION, STORAGE_KEY)
             stored = await store.async_load() or {"sensors": []}
             new_sensor = {
@@ -65,6 +70,7 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
         return self.async_show_form(step_id="add_sensor", data_schema=data_schema)
 
     async def async_step_remove_sensor(self, user_input=None):
+        _LOGGER.debug("FileTrack: Remove sensor step triggered")
         store = Store(self.hass, STORAGE_VERSION, STORAGE_KEY)
         stored = await store.async_load() or {"sensors": []}
         sensors = stored.get("sensors", [])
@@ -75,7 +81,9 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
         if user_input is not None:
             self._to_remove = user_input.get("sensors", [])
             if not self._to_remove:
+                _LOGGER.warning("FileTrack: Remove requested but no sensors selected")
                 return self.async_abort(reason="cancelled")
+            _LOGGER.info("FileTrack: User selected sensors for removal: %s", self._to_remove)
             return await self.async_step_confirm()
 
         options = [{"value": s["name"], "label": s["name"]} for s in sensors]
