@@ -57,7 +57,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if yaml_unique_id:
             unique_id = yaml_unique_id
         else:
-            unique_id = f"filetrack_{name.lower().replace(' ', '_')}"
+            unique_id = f"filetrack_{slugify(name)}"
         
         entities.append(FileTrackSensor(
             yc[CONF_FOLDER_PATHS],
@@ -80,7 +80,7 @@ class FileTrackSensor(SensorEntity):
 
     def __init__(self, folder_path, name, filter_term, sort, recursive, entry_id, config_entry=None):
         self._attr_name = name
-        self._attr_suggested_object_id = name
+        self._attr_suggested_object_id = slugify(name)
         self._attr_unique_id = entry_id
         if config_entry:
             self._attr_config_entry_id = config_entry.entry_id
