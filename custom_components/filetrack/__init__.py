@@ -6,6 +6,8 @@ from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.storage import Store
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_registry as er
+from homeassistant.util import slugify
 from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECURSIVE, CONF_UNIQUE_ID, DEFAULT_FILTER, DEFAULT_SORT, DEFAULT_RECURSIVE, SORT_OPTIONS
 
 _LOGGER = logging.getLogger(__name__)
@@ -109,3 +111,47 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.services.async_remove(DOMAIN, "add_sensor")
     return await hass.config_entries.async_unload_platforms(entry, ["sensor"])
+
+
+async def async_migrate_filetrack_entities(hass):
+    registry = er.async_get(hass)
+    stored = hass.data.get(DOMAIN, {}).get("stored", {}).get("sensors", [])
+    yaml_sensors = hass.data.get(DOMAIN, {}).get("yaml_sensors", [])
+    stored_by_id = {s["id"]: s for s in stored}
+    yaml_by_name = {s["name"]: s for s in yaml_sensors}
+
+    for entity in registry.entities.values():
+        if entity.domain != "sensor":
+            continue
+        if entity.platform != DOMAIN:
+            continue
+        if entity.unique_id:
+            continue
+
+        object_id = entity.entity_id.split(".", 1)[1]
+        new_unique_id = None
+
+        # UI sensors
+        for sensor in stored:
+            expected_object_id = sensor["name"].lower().replace(" ", "_")
+
+            if object_id == expected_object_id:
+                new_unique_id = f"filetrack_{sensor['id']}"
+                break
+
+        # YAML sensors
+        if new_unique_id is None and object_id in yaml_by_name:
+            yaml_sensor = yaml_by_name[object_id]
+
+            if CONF_UNIQUE_ID in yaml_sensor:
+                new_unique_id = yaml_sensor[CONF_UNIQUE_ID]
+            else:
+                new_unique_id = f"filetrack_{slugify(object_id)}"
+
+        # Migrate if matched
+        if new_unique_id:
+            registry.async_update_entity(
+                entity.entity_id,
+                new_unique_id=new_unique_id,
+            )
+            
