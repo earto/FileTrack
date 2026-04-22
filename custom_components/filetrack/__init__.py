@@ -13,6 +13,7 @@ from .const import DOMAIN, CONF_FOLDER_PATHS, CONF_FILTER, CONF_SORT, CONF_RECUR
 _LOGGER = logging.getLogger(__name__)
 STORAGE_KEY = f"{DOMAIN}.sensors"
 STORAGE_VERSION = 1
+MIGRATION_VERSION = 2
 
 SENSOR_SCHEMA = vol.Schema({
     vol.Required("name"): cv.string,
@@ -55,6 +56,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN]["store"] = store
     hass.data[DOMAIN]["stored"] = stored
     hass.data[DOMAIN]["add_entities"] = None
+    hass.data[DOMAIN].setdefault("yaml_sensors", [])
+
+    # Check for old/unlinked sensors
+    if entry.version < MIGRATION_VERSION:
+        await async_migrate_filetrack_entities(hass)
+        hass.config_entries.async_update_entry(
+            entry,
+            version=MIGRATION_VERSION,
+        )
     
     # Create device in registry for proper linking
     from homeassistant.helpers import device_registry as dr
@@ -117,8 +127,7 @@ async def async_migrate_filetrack_entities(hass):
     registry = er.async_get(hass)
     stored = hass.data.get(DOMAIN, {}).get("stored", {}).get("sensors", [])
     yaml_sensors = hass.data.get(DOMAIN, {}).get("yaml_sensors", [])
-    stored_by_id = {s["id"]: s for s in stored}
-    yaml_by_name = {s["name"]: s for s in yaml_sensors}
+    yaml_by_name = {slugify(s["name"]): s for s in yaml_sensors}
 
     for entity in registry.entities.values():
         if entity.domain != "sensor":
@@ -143,7 +152,7 @@ async def async_migrate_filetrack_entities(hass):
         if new_unique_id is None and object_id in yaml_by_name:
             yaml_sensor = yaml_by_name[object_id]
 
-            if CONF_UNIQUE_ID in yaml_sensor:
+            if yaml_sensor.get(CONF_UNIQUE_ID):
                 new_unique_id = yaml_sensor[CONF_UNIQUE_ID]
             else:
                 new_unique_id = f"filetrack_{slugify(object_id)}"
