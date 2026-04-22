@@ -112,7 +112,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         else:
             _LOGGER.warning("FileTrack: sensor platform not loaded yet, sensor appears after restart")
 
-    hass.services.async_register(DOMAIN, "add_sensor", handle_add_sensor, schema=ADD_SENSOR_SCHEMA)
+    if not hass.services.has_service(DOMAIN, "add_sensor"):
+        hass.services.async_register(DOMAIN, "add_sensor", handle_add_sensor, schema=ADD_SENSOR_SCHEMA)
 
     await hass.config_entries.async_forward_entry_setups(entry, ["sensor"])
     return True
@@ -142,7 +143,7 @@ async def async_migrate_filetrack_entities(hass):
 
         # UI sensors
         for sensor in stored:
-            expected_object_id = sensor["name"].lower().replace(" ", "_")
+            expected_object_id = slugify(sensor["name"])
 
             if object_id == expected_object_id:
                 new_unique_id = f"filetrack_{sensor['id']}"
