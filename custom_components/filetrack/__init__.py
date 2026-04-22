@@ -59,6 +59,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN].setdefault("yaml_sensors", [])
 
     # Check for old/unlinked sensors
+    hass.data[DOMAIN]["yaml_sensors"] = hass.data[DOMAIN].get("yaml_sensors", [])
     if entry.version < MIGRATION_VERSION:
         await async_migrate_filetrack_entities(hass)
         hass.config_entries.async_update_entry(
@@ -130,12 +131,13 @@ async def async_migrate_filetrack_entities(hass):
     yaml_sensors = hass.data.get(DOMAIN, {}).get("yaml_sensors", [])
     yaml_by_name = {slugify(s["name"]): s for s in yaml_sensors}
 
-    for entity in registry.entities.values():
+    for entity in list(registry.entities.values()):
         if entity.domain != "sensor":
             continue
         if entity.platform != DOMAIN:
             continue
         if entity.unique_id:
+            _LOGGER.info("FileTrack: Migration skipped %s (has unique_id %s)", entity.entity_id, entity.unique_id)
             continue
 
         object_id = entity.entity_id.split(".", 1)[1]
@@ -152,16 +154,20 @@ async def async_migrate_filetrack_entities(hass):
         # YAML sensors
         if new_unique_id is None and object_id in yaml_by_name:
             yaml_sensor = yaml_by_name[object_id]
-
             if yaml_sensor.get(CONF_UNIQUE_ID):
                 new_unique_id = yaml_sensor[CONF_UNIQUE_ID]
+                _LOGGER.debug("FileTrack: Migration found YAML %s with unique_id %s", object_id, new_unique_id)
             else:
                 new_unique_id = f"filetrack_{slugify(object_id)}"
+                _LOGGER.debug("FileTrack: Migration found YAML %s without unique_id. Assigned %s", object_id, new_unique_id)
 
         # Migrate if matched
         if new_unique_id:
-            registry.async_update_entity(
-                entity.entity_id,
-                new_unique_id=new_unique_id,
-            )
-            
+            try:
+                registry.async_update_entity(entity.entity_id, new_unique_id=new_unique_id)
+                _LOGGER.info("FileTrack: Migrated %s with unique_id %s", entity.entity_id, new_unique_id)
+            except Exception as err:
+                _LOGGER.error("FileTrack: Failed migrating %s: %s", entity.entity_id, err)            
+
+        if not new_unique_id:
+            _LOGGER.warning("FileTrack: Migration could not match entity %s (object_id: %s). Skipping.", entity.entity_id, object_id)
