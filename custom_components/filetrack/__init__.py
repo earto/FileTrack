@@ -148,6 +148,7 @@ async def async_migrate_filetrack_entities(hass):
             expected_object_id = slugify(sensor["name"])
             if object_id == expected_object_id:
                 new_unique_id = f"filetrack_{sensor['id']}"
+                _LOGGER.debug("FileTrack: Migration found %s without unique_id. Assigned %s", entity.entity_id, new_unique_id)
                 break
 
         # YAML sensors
