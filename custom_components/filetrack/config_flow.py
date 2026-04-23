@@ -126,7 +126,16 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
 
         from homeassistant.helpers import entity_registry as er
         registry = er.async_get(self.hass)
-        entity_id = registry.async_get_entity_id("sensor", DOMAIN, sensor_id)
+        entity_id = next(
+            (
+                e.entity_id
+                for e in registry.entities.values()
+                if e.domain == "sensor"
+                and e.platform == DOMAIN
+                and e.unique_id == f"filetrack_{sensor_id}"
+            ),
+            None,
+        )
         if entity_id:
             registry.async_remove(entity_id)
 
