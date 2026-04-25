@@ -49,7 +49,9 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
             new_sensor = {
                 "id": uuid.uuid4().hex,
                 "name": user_input["name"],
-                CONF_FOLDER_PATHS: user_input[CONF_FOLDER_PATHS],
+                raw_path = user_input[CONF_FOLDER_PATHS].lstrip("/")
+                full_path = os.path.join("/config/www", raw_path)
+                CONF_FOLDER_PATHS: full_path,
                 CONF_FILTER: user_input.get(CONF_FILTER, DEFAULT_FILTER),
                 CONF_SORT: user_input.get(CONF_SORT, DEFAULT_SORT),
                 CONF_RECURSIVE: user_input.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
