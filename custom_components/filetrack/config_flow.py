@@ -41,35 +41,38 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
         )
 
     async def async_step_add_sensor(self, user_input=None):
-        _LOGGER.debug("FileTrack: Add sensor step triggered")
+        errors = {}
         if user_input is not None:
-            _LOGGER.info("FileTrack: Adding new sensor: %s", user_input["name"])
-            store = Store(self.hass, STORAGE_VERSION, STORAGE_KEY)
-            stored = await store.async_load() or {"sensors": []}
-            new_sensor = {
-                "id": uuid.uuid4().hex,
-                "name": user_input["name"],
-                raw_path = user_input[CONF_FOLDER_PATHS].lstrip("/")
-                full_path = os.path.join("/config/www", raw_path)
-                CONF_FOLDER_PATHS: full_path,
-                CONF_FILTER: user_input.get(CONF_FILTER, DEFAULT_FILTER),
-                CONF_SORT: user_input.get(CONF_SORT, DEFAULT_SORT),
-                CONF_RECURSIVE: user_input.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
-            }
+            folder = user_input[CONF_FOLDER_PATHS]
+            if not folder.startswith("/config/www/"):
+                errors[CONF_FOLDER_PATHS] = "invalid_path"
+            if not errors:
+                _LOGGER.info("FileTrack: Adding new sensor: %s", user_input["name"])
+                store = Store(self.hass, STORAGE_VERSION, STORAGE_KEY)
+                stored = await store.async_load() or {"sensors": []}
+                new_sensor = {
+                    "id": uuid.uuid4().hex,
+                    "name": user_input["name"],
+                    CONF_FOLDER_PATHS: user_input[CONF_FOLDER_PATHS],
+                    CONF_FILTER: user_input.get(CONF_FILTER, DEFAULT_FILTER),
+                    CONF_SORT: user_input.get(CONF_SORT, DEFAULT_SORT),
+                    CONF_RECURSIVE: user_input.get(CONF_RECURSIVE, DEFAULT_RECURSIVE),
+                }
             
-            stored["sensors"].append(new_sensor)
-            await store.async_save(stored)
-            await self.hass.config_entries.async_reload(self._config_entry.entry_id)
-            return self.async_create_entry(title="", data={})
+                stored["sensors"].append(new_sensor)
+                await store.async_save(stored)
+                await self.hass.config_entries.async_reload(self._config_entry.entry_id)
+                return self.async_create_entry(title="", data={})
 
         data_schema = vol.Schema({
             vol.Required("name"): str,
-            vol.Required(CONF_FOLDER_PATHS): str,
+            vol.Required(CONF_FOLDER_PATHS, default="/config/www/your-folder"): str,
             vol.Optional(CONF_FILTER, default=DEFAULT_FILTER): str,
             vol.Optional(CONF_SORT, default=DEFAULT_SORT): vol.In(SORT_OPTIONS),
             vol.Optional(CONF_RECURSIVE, default=DEFAULT_RECURSIVE): bool,
         })
-        return self.async_show_form(step_id="add_sensor", data_schema=data_schema)
+        
+        return self.async_show_form(step_id="add_sensor", data_schema=data_schema, errors=errors)
 
     async def async_step_remove_sensor(self, user_input=None):
         _LOGGER.debug("FileTrack: Remove sensor step triggered")
