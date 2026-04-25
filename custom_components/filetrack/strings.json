@@ -7,7 +7,7 @@
       }
     },
     "abort": {
-      "already_configured": "FileTrack is already configured."
+      "already_configured": "FileTrack is already installed."
     }
   },
   "options": {
@@ -27,6 +27,9 @@
           "filter": "Filter (e.g. *.jpg)",
           "sort": "Sort Criteria",
           "recursive": "Search Subfolders"
+        },
+        "errors": {
+            "invalid_path": "Path must start with /config/www/"
         }
       },
       "remove_sensor": {
