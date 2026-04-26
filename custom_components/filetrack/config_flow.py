@@ -91,7 +91,7 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
             _LOGGER.info("FileTrack: User selected sensors for removal: %s", self._to_remove)
             return await self.async_step_confirm()
 
-        options = [{"value": s["name"], "label": s["name"]} for s in sensors]
+        options = [{"value": s["id"], "label": f"{s['name']} ({s[CONF_FOLDER_PATHS]})"} for s in sensors]
         return self.async_show_form(
             step_id="remove_sensor",
             data_schema=vol.Schema({
@@ -104,13 +104,17 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
     async def async_step_confirm(self, user_input=None):
         if user_input is not None:
             if user_input.get("confirm"):
-                for name in self._to_remove:
-                    await self._do_remove(name)
+                for sensor_id in self._to_remove:
+                    await self._do_remove(sensor_id)
                 await self.hass.config_entries.async_reload(self._config_entry.entry_id)
                 return self.async_create_entry(title="", data={})
             return self.async_abort(reason="cancelled")
 
-        names = "\n".join(f"• {n}" for n in self._to_remove)
+        store = Store(self.hass, STORAGE_VERSION, STORAGE_KEY)
+        stored = await store.async_load() or {"sensors": []}
+        id_to_name = {s["id"]: f"{s['name']} ({s[CONF_FOLDER_PATHS]})" for s in stored.get("sensors", [])}
+        names = "\n".join(f"• {id_to_name.get(i, i)}" for i in self._to_remove)
+        
         return self.async_show_form(
             step_id="confirm",
             data_schema=vol.Schema({
@@ -119,15 +123,9 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
             description_placeholders={"names": names},
         )
 
-    async def _do_remove(self, name):
+    async def _do_remove(self, sensor_id):
         store = Store(self.hass, STORAGE_VERSION, STORAGE_KEY)
         stored = await store.async_load() or {"sensors": []}
-
-        match = next((s for s in stored["sensors"] if s["name"] == name), None)
-        if not match:
-            return
-
-        sensor_id = match["id"]
 
         from homeassistant.helpers import entity_registry as er
         registry = er.async_get(self.hass)
@@ -141,8 +139,20 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
             ),
             None,
         )
-        if entity_id:
+        removed = False
+        if entity_id: 
             registry.async_remove(entity_id)
+            _LOGGER.info("FileTrack: Removed entity %s", entity_id)
+            removed = True
+        else:
+            _LOGGER.warning("FileTrack: No entity found for sensor_id=%s", sensor_id)
 
+        # Remove from storage
+        before = len(stored["sensors"])
         stored["sensors"] = [s for s in stored["sensors"] if s["id"] != sensor_id]
+        after = len(stored["sensors"])
+        storage_removed = before != after
+        removed = removed or storage_removed
+            
         await store.async_save(stored)
+        return removed
