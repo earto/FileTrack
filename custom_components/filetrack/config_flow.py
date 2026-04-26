@@ -143,12 +143,14 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
             _LOGGER.info("FileTrack: Removed entity %s", entity_id)
             removed = True
         else:
-            _LOGGER.debug("FileTrack: No entity found for unique_id=%s (sensor_id=%s)", unique_id, sensor_id,)
+            _LOGGER.debug("FileTrack: Registry delete failed; unique_id=%s not found", unique_id)
 
         # Remove from storage
         before = len(stored["sensors"])
         stored["sensors"] = [s for s in stored["sensors"] if s["id"] != sensor_id]
         after = len(stored["sensors"])
+        if before == after:
+            _LOGGER.debug("FileTrack: Storage delete failed; sensor_id=%s not found", sensor_id)
 
         await store.async_save(stored)
         return before != after
