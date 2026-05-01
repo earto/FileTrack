@@ -49,7 +49,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Laad FileTrack vanuit het config entry en registreer de add_sensor service."""
-    LOGGER.debug("FileTrack: Starting async_setup_entry. Version: %s", entry.version)
+    _LOGGER.debug("FileTrack: Starting async_setup_entry. Version: %s", entry.version)
     store = Store(hass, STORAGE_VERSION, STORAGE_KEY)
     stored = await store.async_load() or {"sensors": []}
 
