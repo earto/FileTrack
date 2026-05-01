@@ -86,12 +86,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         sort = call.data.get(CONF_SORT, DEFAULT_SORT)
         recursive = call.data.get(CONF_RECURSIVE, DEFAULT_RECURSIVE)
 
-        if not os.path.isdir(folder):
-            try:
+        def create_folder():
+            if not os.path.isdir(folder):
                 os.makedirs(folder, exist_ok=True)
-            except Exception as e:
-                _LOGGER.error("FileTrack: Failed to create folder %s: %s", folder, e)
-                raise ValueError(f"Cannot create folder: {folder}") from e
+
+        try:
+            await hass.async_add_executor_job(create_folder)
+        except Exception as e:
+            _LOGGER.error("FileTrack: Failed to create folder %s: %s", folder, e)
+            raise ValueError(f"Cannot create folder: {folder}") from e
 
         sensor_id = uuid.uuid4().hex
         sensor_config = {
