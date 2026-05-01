@@ -79,7 +79,6 @@ class FileTrackSensor(SensorEntity):
     """De sensor definitie."""
     _attr_icon = "mdi:folder"
     _attr_native_unit_of_measurement = "MB"
-    _attr_has_entity_name = False
 
     def __init__(self, folder_path, name, filter_term, sort, recursive, entry_id, config_entry=None):
         self._attr_name = name
