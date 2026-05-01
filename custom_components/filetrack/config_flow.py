@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 class FileTrackConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Auto-setup: geen formulier nodig, activeert FileTrack direct."""
 
-    VERSION = 2
+    VERSION = 1
 
     async def async_step_user(self, user_input=None):
         await self.async_set_unique_id(DOMAIN)
