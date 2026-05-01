@@ -43,6 +43,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     entities = []
     
     for sc in stored.get("sensors", []):
+        unique_id = f"filetrack_{sc['id']}"
+        _LOGGER.debug("FileTrack: Preparing UI sensor: %s (unique_id: %s)", sc["name"], unique_id)
         entities.append(FileTrackSensor(
             sc[CONF_FOLDER_PATHS],
             sc["name"],
@@ -59,7 +61,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             unique_id = yaml_unique_id
         else:
             unique_id = f"filetrack_{slugify(name)}"
-        
+        _LOGGER.debug("FileTrack: Preparing YAML sensor: %s (unique_id: %s)", name, unique_id)
         entities.append(FileTrackSensor(
             yc[CONF_FOLDER_PATHS],
             name,
