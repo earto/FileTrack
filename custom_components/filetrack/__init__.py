@@ -183,7 +183,7 @@ async def async_migrate_filetrack_entities(hass):
         else:
             _LOGGER.warning("FileTrack: Migration could not match entity %s (object_id: %s). Skipping.", entity.entity_id, object_id)
 
-if migration_count == 0:
+    if migration_count == 0:
         _LOGGER.info("FileTrack: Finished v2 migration. > No sensors need updating.")
     else:
         _LOGGER.info("FileTrack: Finished v2 migration. > %s sensors updated.", migration_count)
