@@ -168,7 +168,7 @@ async def async_migrate_filetrack_entities(hass):
                 new_unique_id = yaml_sensor[CONF_UNIQUE_ID]
                 _LOGGER.debug("FileTrack: Migration found YAML %s with unique_id %s", entity.entity_id, new_unique_id)
             else:
-                new_unique_id = f"filetrack_{object_id}"
+                new_unique_id = f"{object_id}"
                 _LOGGER.debug("FileTrack: Migration found YAML %s without unique_id. Assigned %s", entity.entity_id, new_unique_id)
         
         # Other sensors
