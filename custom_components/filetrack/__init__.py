@@ -129,7 +129,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_migrate_filetrack_entities(hass):
+    _LOGGER.info("FileTrack: Starting migration checks to v2")
     registry = er.async_get(hass)
+    migration_count = 0
     stored = hass.data.get(DOMAIN, {}).get("stored", {}).get("sensors", [])
     yaml_sensors = hass.data.get(DOMAIN, {}).get("yaml_sensors", [])
     yaml_by_name = {slugify(s["name"]): s for s in yaml_sensors}
@@ -179,3 +181,8 @@ async def async_migrate_filetrack_entities(hass):
 
         if not new_unique_id:
             _LOGGER.warning("FileTrack: Migration could not match entity %s (object_id: %s). Skipping.", entity.entity_id, object_id)
+
+if migration_count == 0:
+        _LOGGER.info("FileTrack: Migration complete. > No sensors need updating.")
+    else:
+        _LOGGER.info("FileTrack: Migration complete. > %s sensors updated.", migration_count)
