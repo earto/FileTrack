@@ -129,7 +129,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_migrate_filetrack_entities(hass):
-    _LOGGER.info("FileTrack: Starting migration checks to v2")
+    _LOGGER.info("FileTrack: First run. Checking sensors for v2 migration")
     registry = er.async_get(hass)
     migration_count = 0
     stored = hass.data.get(DOMAIN, {}).get("stored", {}).get("sensors", [])
@@ -176,13 +176,14 @@ async def async_migrate_filetrack_entities(hass):
             try:
                 registry.async_update_entity(entity.entity_id, new_unique_id=new_unique_id)
                 _LOGGER.info("FileTrack: Migrated %s with unique_id %s", entity.entity_id, new_unique_id)
+                migration_count += 1
             except Exception as err:
                 _LOGGER.error("FileTrack: Failed migrating %s: %s", entity.entity_id, err)            
 
-        if not new_unique_id:
+        else:
             _LOGGER.warning("FileTrack: Migration could not match entity %s (object_id: %s). Skipping.", entity.entity_id, object_id)
 
 if migration_count == 0:
-        _LOGGER.info("FileTrack: Migration complete. > No sensors need updating.")
+        _LOGGER.info("FileTrack: Finished v2 migration. > No sensors need updating.")
     else:
-        _LOGGER.info("FileTrack: Migration complete. > %s sensors updated.", migration_count)
+        _LOGGER.info("FileTrack: Finished v2 migration. > %s sensors updated.", migration_count)
