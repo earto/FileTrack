@@ -59,7 +59,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN].setdefault("yaml_sensors", [])
 
     # Check for old/unlinked sensors
-    hass.data[DOMAIN]["yaml_sensors"] = hass.data[DOMAIN].get("yaml_sensors", [])
     if entry.version < MIGRATION_VERSION:
         await async_migrate_filetrack_entities(hass)
         hass.config_entries.async_update_entry(
