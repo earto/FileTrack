@@ -80,10 +80,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         model=MODEL,
     )
 
-    async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
-    """Satisfy Home Assistant core migration requirement."""
-    return True
-    
     async def handle_add_sensor(call: ServiceCall) -> None:
         name = call.data["name"].strip()
         folder = call.data[CONF_FOLDER_PATHS].strip().rstrip("/")
@@ -126,6 +122,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_setups(entry, ["sensor"])
     return True
 
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
+    """Satisfy Home Assistant core migration requirement."""
+    return True
+    
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.services.async_remove(DOMAIN, "add_sensor")
