@@ -83,16 +83,18 @@ class FileTrackSensor(SensorEntity):
 
     def __init__(self, folder_path, name, filter_term, sort, recursive, entry_id, config_entry=None):
         self._attr_name = name
-        self._attr_has_entity_name = False
-        self.entity_id = f"sensor.{slugify(name)}"
-        self._attr_suggested_object_id = slugify(name)
         self._attr_unique_id = entry_id
-        if config_entry:
-            self._attr_config_entry_id = config_entry.entry_id
-            self._config_entry = config_entry
+        self._attr_suggested_object_id = slugify(name)
+
+        # Keep existing sensor_id for UI and YAML
+        if entry_id.startswith("filetrack_"):
+            self._attr_has_entity_name = True
         else:
-            self._attr_config_entry_id = None
-            self._config_entry = None
+            self.entity_id = f"sensor.{slugify(name)}"
+            self._attr_has_entity_name = False
+            
+        self._attr_config_entry_id = getattr(config_entry, 'entry_id', None)
+        self._config_entry = config_entry    
         self._folder_path = os.path.join(folder_path, "")
         self._filter_term = filter_term
         self._sort = sort
