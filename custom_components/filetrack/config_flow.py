@@ -126,9 +126,8 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
     async def _do_remove(self, sensor_id):
         store = Store(self.hass, STORAGE_VERSION, STORAGE_KEY)
         stored = await store.async_load() or {"sensors": []}
-        match = next(
-            (s for s in stored["sensors"] if s["id"] == sensor_id), None)
-        unique_id = match.get("unique_id") if match else None
+        match = next((s for s in stored["sensors"] if s["id"] == sensor_id), None)
+        unique_id = f"filetrack_{match['id']}" if match else None
         
         from homeassistant.helpers import entity_registry as er
         registry = er.async_get(self.hass)
@@ -137,13 +136,11 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
         if unique_id:
             entity_id = er.async_get_entity_id("sensor", DOMAIN, unique_id)
             
-        removed = False
         if entity_id:
             registry.async_remove(entity_id)
             _LOGGER.info("FileTrack: Removed entity %s", entity_id)
-            removed = True
         else:
-            _LOGGER.debug("FileTrack: Registry delete failed; unique_id=%s not found", unique_id)
+            _LOGGER.debug("FileTrack: Registry delete skipped; unique_id=%s not in registry", unique_id)
 
         # Remove from storage
         before = len(stored["sensors"])
