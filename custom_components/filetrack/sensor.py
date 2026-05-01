@@ -60,7 +60,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         if yaml_unique_id:
             unique_id = yaml_unique_id
         else:
-            unique_id = f"filetrack_{slugify(name)}"
+            unique_id = slugify(name)
         _LOGGER.debug("FileTrack: Preparing YAML sensor: %s (unique_id: %s)", name, unique_id)
         entities.append(FileTrackSensor(
             yc[CONF_FOLDER_PATHS],
