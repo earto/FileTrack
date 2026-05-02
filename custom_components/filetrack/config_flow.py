@@ -95,7 +95,7 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
         return self.async_show_form(
             step_id="remove_sensor",
             data_schema=vol.Schema({
-                vol.Required("sensors"): selector.SelectSelector(
+                vol.Required("sensors", default=[]): selector.SelectSelector(
                     selector.SelectSelectorConfig(options=options, multiple=True)
                 )
             }),
