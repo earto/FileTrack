@@ -18,7 +18,7 @@ A Home Assistant custom component that monitors folders and exposes their total 
 How to make a sensor:
 
 ### Method 1 — Config Menu
-From the FileTrack integration page, click "Configure" (gear icon), then click "Add new FileTrack sensor".
+Open Settings → Devices & Services → FileTrack → Configure (gear icon). Select "Add new FileTrack sensor". Enter at least a name and folder path.
 
 <img width="444" height="470" alt="image" src="https://github.com/user-attachments/assets/94fae908-228c-4e1f-9da2-c17b4a8e1e54" />
 
@@ -58,5 +58,5 @@ filetrack:
 
 ## Removing Sensors
 
-* **UI/Service Sensors:** Go to **Settings → Devices & Services → FileTrack → Configure** to select and remove sensors added via the UI.
+* **UI/Service Sensors:** Open **Settings → Devices & Services → FileTrack → Configure**. Select "Remove FileTrack sensors". Select sensors to remove and follow the confirmation. 
 * **YAML Sensors:** Remove the relevant entries from your `configuration.yaml` file and restart Home Assistant.
