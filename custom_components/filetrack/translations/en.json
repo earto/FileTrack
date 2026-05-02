@@ -3,11 +3,11 @@
     "step": {
       "user": {
         "title": "Set up FileTrack",
-        "description": "FileTrack will be activated immediately. Use the configuration menu to add folder sensors."
+        "description": "Click Submit to enable FileTrack. Then use the Configure menu to add sensors."
       }
     },
     "abort": {
-      "already_configured": "FileTrack is already added. To add sensors click the Configure icon.
+      "already_configured": "FileTrack is already added. Use the Configure menu to add sensors."
     }
   },
   "options": {
