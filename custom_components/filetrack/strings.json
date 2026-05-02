@@ -7,7 +7,7 @@
       }
     },
     "abort": {
-      "already_configured": "FileTrack is already installed."
+      "already_configured": "FileTrack is already configured.\n\nClick Configure to add sensors."
     }
   },
   "options": {
@@ -15,8 +15,8 @@
       "init": {
         "title": "Manage Sensors",
         "menu_options": {
-          "add_sensor": "Add a new folder sensor",
-          "remove_sensor": "Remove existing sensors"
+          "add_sensor": "Add a new FileTrack sensor",
+          "remove_sensor": "Remove FileTrack sensors"
         }
       },
       "add_sensor": {
