@@ -17,12 +17,17 @@ A Home Assistant custom component that monitors folders and exposes their total 
 
 How to make a sensor:
 
-### Method 1 — Camera Gallery Card
+### Method 1 — Config Menu
+From the FileTrack integration page, click "Configure" (gear icon) then "Add new FileTrack sensor".
+
+<img width="747" height="791" alt="image" src="https://github.com/user-attachments/assets/8439979d-6942-4b00-b139-ac854ec0ffab" />
+
+### Method 2 — Camera Gallery Card
 Sensors are created directly from the **[Camera Gallery Card](https://github.com/TheScubadiver/camera-gallery-card) Editor** — no YAML, service calls, or manual setup required.
 
 <img width="418" height="380" alt="image" src="https://github.com/user-attachments/assets/e0c5b505-f94b-48f8-b8a3-dbadee3cd41b" />
 
-### Method 2 — YAML
+### Method 3 — YAML
 Add sensors directly to your `configuration.yaml` file:
 
 ```yaml
