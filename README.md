@@ -20,7 +20,7 @@ How to make a sensor:
 ### Method 1 — Config Menu
 From the FileTrack integration page, click "Configure" (gear icon) then "Add new FileTrack sensor".
 
-<img width="747" height="791" alt="image" src="https://github.com/user-attachments/assets/8439979d-6942-4b00-b139-ac854ec0ffab" />
+<img width="518" height="548" alt="image" src="https://github.com/user-attachments/assets/3a30ee24-4ac7-460a-bed9-e21ef4c9e9f9" />
 
 ### Method 2 — Camera Gallery Card
 Sensors are created directly from the **[Camera Gallery Card](https://github.com/TheScubadiver/camera-gallery-card) Editor** — no YAML, service calls, or manual setup required.
