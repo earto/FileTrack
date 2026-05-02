@@ -2,34 +2,57 @@
   "config": {
     "step": {
       "user": {
-        "title": "FileTrack instellen",
-        "description": "FileTrack wordt direct geactiveerd. Gebruik daarna de service 'filetrack.add_sensor' om sensoren toe te voegen."
+        "title": "Set up FileTrack",
+        "description": "Click Submit to enable FileTrack. Then use the Configure menu to add sensors."
       }
     },
     "abort": {
-      "already_configured": "FileTrack is al geconfigureerd."
+      "already_configured": "FileTrack is already added. Use the Configure menu to add sensors."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Sensoren verwijderen",
-        "description": "Selecteer de sensor(en) die je wilt verwijderen.",
+        "title": "Manage Sensors",
+        "menu_options": {
+          "add_sensor": "Add a new FileTrack sensor",
+          "remove_sensor": "Remove FileTrack sensors"
+        }
+      },
+      "add_sensor": {
+        "title": "Add new sensor",
         "data": {
-          "sensors": "Te verwijderen sensoren"
+          "name": "Sensor Name",
+          "folder": "Folder Path",
+          "filter": "Filter (e.g. *.jpg)",
+          "sort": "Sort Criteria",
+          "recursive": "Search Subfolders"
+        },
+        "errors": {
+          "invalid_path": "Path must start with /config/www/"
+        }
+      },
+      "remove_sensor": {
+        "title": "Remove sensors",
+        "description": "Select the sensor(s) to be removed.\n*NOTE: Sensors in configuration.yaml cannot be removed here.*",
+        "data": {
+          "sensors": "Remove sensors:"
         }
       },
       "confirm": {
-        "title": "Bevestig verwijdering",
-        "description": "Je staat op het punt de volgende sensor(en) permanent te verwijderen:\n\n**{names}**\n\nDit kan niet ongedaan worden gemaakt.",
+        "title": "Confirm removal",
+        "description": "You are about to permanently remove the following sensor(s):\n\n**{names}**",
         "data": {
-          "confirm": "Ja, verwijder deze sensor(en)"
+          "confirm": "Yes, remove these sensor(s)"
         }
       }
     },
+    "error": {
+      "no_selection": "Please select at least one sensor to remove."
+    },
     "abort": {
-      "no_sensors": "Er zijn geen sensoren om te verwijderen.",
-      "cancelled": "Verwijdering geannuleerd."
+      "no_sensors": "There are no sensors to remove.",
+      "cancelled": "Operation cancelled."
     }
   }
 }
