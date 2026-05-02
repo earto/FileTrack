@@ -79,17 +79,17 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
         store = Store(self.hass, STORAGE_VERSION, STORAGE_KEY)
         stored = await store.async_load() or {"sensors": []}
         sensors = stored.get("sensors", [])
+        errors = {}
 
         if not sensors:
             return self.async_abort(reason="no_sensors")
             
         if user_input is not None:
             self._to_remove = user_input.get("sensors", [])
-            if not self._to_remove:
-                _LOGGER.warning("FileTrack: Remove requested but no sensors selected")
-                return self.async_abort(reason="cancelled")
-            _LOGGER.info("FileTrack: User selected sensors for removal: %s", self._to_remove)
-            return await self.async_step_confirm()
+            if self._to_remove:
+                _LOGGER.info("FileTrack: User selected sensors for removal: %s", self._to_remove)
+                return await self.async_step_confirm()
+            errors["base"] = "no_selection"
 
         options = [{"value": s["id"], "label": f"{s['name']} ({s[CONF_FOLDER_PATHS]})"} for s in sensors]
         return self.async_show_form(
@@ -99,6 +99,7 @@ class FileTrackOptionsFlow(config_entries.OptionsFlow):
                     selector.SelectSelectorConfig(options=options, multiple=True)
                 )
             }),
+            errors=errors,
         )
 
     async def async_step_confirm(self, user_input=None):
