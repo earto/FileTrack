@@ -23,7 +23,7 @@
         "title": "Add new sensor",
         "data": {
           "name": "Sensor Name",
-          "folder_paths": "Folder Path",
+          "folder": "Folder Path",
           "filter": "Filter (e.g. *.jpg)",
           "sort": "Sort Criteria",
           "recursive": "Search Subfolders"
