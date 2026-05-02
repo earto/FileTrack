@@ -34,9 +34,9 @@
       },
       "remove_sensor": {
         "title": "Remove sensors",
-        "description": "Select the sensor(s) you wish to remove.\n\n*NOTE: Sensors in configuration.yaml must be removed from the file.*",
+        "description": "Select the sensor(s) to be removed.\n*NOTE: Sensors in configuration.yaml cannot be removed here.*",
         "data": {
-          "sensors": "Sensors to remove"
+          "sensors": "Remove sensors:"
         }
       },
       "confirm": {
