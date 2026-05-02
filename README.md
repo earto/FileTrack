@@ -26,14 +26,14 @@ Sensors are created directly from the **[Camera Gallery Card](https://github.com
 Add sensors directly to your `configuration.yaml` file:
 
 ```yaml
-sensor:
-  - platform: filetrack
-    folder: /config/www/snapshots
-    filter: '*.jpg'
-    name: snapshots
-    unique_id: snapshots_jpg
-    sort: date
-    recursive: True
+filetrack:
+  sensors:
+    - folder: /config/www/snapshots
+      filter: '*.jpg'
+      name: Snapshots
+      unique_id: snapshots_jpg
+      sort: date
+      recursive: True
 ```
 
 #### YAML Configuration Variables
