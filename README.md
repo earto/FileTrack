@@ -54,6 +54,7 @@ filetrack:
 
 *Note1: Restart Home Assistant after adding YAML entries.*
 *Note2: From FileTrack 2.0, the legacy YAML format (sensor: > platform: filetrack) is not supported. Follow the example above.*
+
 ---
 
 ## Removing Sensors
