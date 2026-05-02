@@ -23,13 +23,13 @@
         "title": "Add new sensor",
         "data": {
           "name": "Sensor Name",
-          "folder": "Folder Path",
+          "folder_paths": "Folder Path",
           "filter": "Filter (e.g. *.jpg)",
           "sort": "Sort Criteria",
           "recursive": "Search Subfolders"
         },
         "errors": {
-            "invalid_path": "Path must start with /config/www/"
+          "invalid_path": "Path must start with /config/www/"
         }
       },
       "remove_sensor": {
@@ -46,6 +46,9 @@
           "confirm": "Yes, remove these sensor(s)"
         }
       }
+    },
+    "error": {
+      "no_selection": "Please select at least one sensor to remove."
     },
     "abort": {
       "no_sensors": "There are no sensors to remove.",
