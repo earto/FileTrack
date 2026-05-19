@@ -50,7 +50,7 @@ filetrack:
 | name | string | **Required** | The entity ID for the sensor
 | unique_id | string | **Optional** | Allows an entity to be customized/deleted correctly. `Default: none`
 | sort | string | **Optional** | One of 'name', 'date', or 'size'. Determines the sort order for viewing. `Default: date`
-| recursive | boolean | **Optional** | True or False; If True, the pattern filter `**` will match any files and zero or more directories, subdirectories and symbolic links to directories. **Note:** Using the `**` pattern in large directory trees will add significant delay. `Default: False`
+| recursive | boolean | **Optional** | If True, search every subfolder under the configured `folder`, matching `filter` at any depth. `Default: False`. **Note:** in deep trees this can be slow — keep `filter` specific (e.g. `*.jpg`) for large folders.
 
 *Note1: Restart Home Assistant after adding YAML entries.*
 
