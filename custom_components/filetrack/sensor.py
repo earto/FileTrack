@@ -24,8 +24,21 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 
 def get_files_list(folder_path, filter_term, sort, recursive):
-    query = os.path.join(folder_path, filter_term)
+    # `glob.glob(..., recursive=True)` only walks subdirs when the pattern
+    # itself contains `**`. Without it the recursive flag is a no-op —
+    # which is the bug behind issue #5. When the user (or YAML) asks for
+    # recursive search, expand the pattern to `**/<filter>` so every
+    # subdir is walked. The recursive flag still controls glob's
+    # interpretation of `**`.
+    if recursive:
+        query = os.path.join(folder_path, "**", filter_term)
+    else:
+        query = os.path.join(folder_path, filter_term)
     files = glob.glob(query, recursive=recursive)
+    # `*` (and `**`) also matches directory entries. Filter those out so
+    # the sensor only reports actual files — otherwise the size sum and
+    # file count include directory bytes / inodes too.
+    files = [f for f in files if os.path.isfile(f)]
     if sort == "name":
         return sorted(files)
     elif sort == "size":
