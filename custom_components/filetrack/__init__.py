@@ -144,7 +144,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry):
-    """Satisfy Home Assistant core migration requirement."""
+    """Satisfy core migration requirement. Version 2 avoids any migration problems"""
+    hass.config_entries.async_update_entry(config_entry, version=2)
     return True
     
 
